@@ -13,7 +13,12 @@ void main() async {
         if (await CSVService.isImageInCsv(taggingService.imagePaths[i], 'existing.csv')) {
           continue;
         }
-        await taggingService.getKeywords(taggingService.getFilesFromImagePaths(taggingService.imagePaths[i]));
+        try {
+          await taggingService.getKeywords(taggingService.getFilesFromImagePaths(taggingService.imagePaths[i]));
+        } catch (e) {
+          print("Decoding from json is failed! Skipping this image!");
+          continue;
+        }
       }
       loopFinished = true;
     } on GenerativeAIException catch (_) {

@@ -29,12 +29,21 @@ class TaggingService {
         keywords.add((response.data["keywords"] as List)[i]["keyword"]);
       }
 
-      String? paraphrasedTitle = await GenerativeAiService.getTitle(
-          file.path.split('/').last.replaceAll(".png", ".jpeg").replaceAll("theyusifahmad_", ""), keywords);
+      String? paraphrasedTitle = (await GenerativeAiService.getTitle(
+              file.path.split('/').last.replaceAll(".png", ".jpeg").replaceAll("theyusifahmad_", ""), keywords))
+          ?.keys
+          .first;
+      String? category = (await GenerativeAiService.getTitle(
+              file.path.split('/').last.replaceAll(".png", ".jpeg").replaceAll("theyusifahmad_", ""), keywords))
+          ?.values
+          .first;
 
-      if (paraphrasedTitle != null) {
-        CSVService.saveMetadataToCSV("image${file.path.split('/').last.replaceAll(".png", ".jpeg")}", paraphrasedTitle,
-            paraphrasedTitle, keywords);
+      if (paraphrasedTitle != null && category != null) {
+        CSVService.saveMetadataToCSV(
+            filename: "image${file.path.split('/').last.replaceAll(".png", ".jpeg")}",
+            title: paraphrasedTitle,
+            category: category,
+            keywords: keywords);
       }
     } on DioException catch (e) {
       print(e.response);

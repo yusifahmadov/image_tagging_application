@@ -1,14 +1,18 @@
 import 'dart:io';
 
 abstract class CSVService {
-  static void saveMetadataToCSV(String filename, String title, String description, List<String> keywords) async {
-    String csvContent = '"$filename","$title","$description","${keywords.join(', ')}"\n';
+  static void saveMetadataToCSV(
+      {required String filename,
+      required String title,
+      required String category,
+      required List<String> keywords}) async {
+    String csvContent = '"$filename","$title","${keywords.join(', ')}","$category"\n';
 
     String directory = Directory.current.path;
 
     File file = File('$directory/output.csv');
     if (!await file.exists()) {
-      csvContent = 'Filename,Title,Description,Keywords\n$csvContent';
+      csvContent = 'Filename,Title,Keywords,Category\n$csvContent';
     }
     await file.writeAsString(csvContent, mode: FileMode.append);
 
@@ -51,7 +55,7 @@ abstract class CSVService {
 
       IOSink sink = existingFile.openWrite(mode: FileMode.append);
       if (!(await existingFile.exists())) {
-        sink.writeln("Filename,Title,Description,Keywords");
+        sink.writeln("Filename,Title,Keywords,Category");
       }
       for (String line in outputLines) {
         sink.writeln(line);

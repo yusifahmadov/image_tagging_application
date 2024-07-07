@@ -1,7 +1,9 @@
+import 'dart:convert';
+
 import 'package:google_generative_ai/google_generative_ai.dart';
 
 abstract class GenerativeAiService {
-  static Future<String?> getTitle(String fileName, List<String> keywords) async {
+  static Future<Map<String, String>?> getTitle(String fileName, List<String> keywords) async {
     final safetySettings = [
       SafetySetting(HarmCategory.harassment, HarmBlockThreshold.none),
       SafetySetting(HarmCategory.hateSpeech, HarmBlockThreshold.none),
@@ -13,17 +15,23 @@ abstract class GenerativeAiService {
         apiKey: "***REMOVED***",
         safetySettings: safetySettings);
 
-    final prompt =
-        """Paraphrase this title and make it lengthy and give me only the paraphrased title. Do not give me other words
-    Title: $fileName
-    The length should be between 100-150 characters. The first letter will be uppercase and others are lower case. 
+    final prompt = """Paraphrase this file name and make it lengthy and give appropriate category.
+    Filename: $fileName
+    The length of filename should be between 100-150 characters. Capitalize the only first letter and others should be lowercase.
     If you see any struggles to make a new paraphrased title, then you can use these keywords of the image: $keywords
+    
+    So give me appropriate category by using paraphrased filename and keywords. 
+    Category should be from among them: Animals, Buildings and Architecture, Business, Drinks, The Environment, States of Mind, Food, Graphic Resources, Hobbies and Leisure, Industry, Landscapes, Lifestyle, People, Plants and Flowers, Culture and Religion, Science, Social Issues, Sports, Technology, Transport, Travel.
+    The final result should be in json format. 
     EXAMPLE: 
-    Given title: a road in the woods
-    Response: A winding path through the autumnal forest
+    Given filename: a road in the woods
+    Response: {"filename":"A winding path through the autumnal forest.", "category":"Landscapes"}
     """;
     final content = [Content.text(prompt)];
     final response = await model.generateContent(content);
-    return response.text?.trim();
+    Map<String, dynamic> parsedResponse =
+        jsonDecode(response.text!.replaceAll("```json\n", "").replaceAll("\n```", ""));
+
+    return {parsedResponse["filename"]: parsedResponse["category"]};
   }
 }
