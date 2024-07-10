@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
+import 'package:image_tagging_application/constant.dart';
 import 'package:image_tagging_application/csv_service.dart';
 import 'package:image_tagging_application/dotenv.dart';
 import 'package:image_tagging_application/generative_ai_service.dart';
@@ -57,7 +58,7 @@ class TaggingService {
             keywords: keywords);
       }
     } on DioException catch (e) {
-      print(e.response);
+      logger.e(e.response);
     }
   }
 
@@ -112,7 +113,7 @@ class TaggingService {
     if (imageFile.existsSync()) {
       tempImage = imageFile;
     } else {
-      print('Warning: Image file not found at $imagePath');
+      logger.w('Warning: Image file not found at $imagePath');
     }
 
     return tempImage;

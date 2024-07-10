@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:image_tagging_application/constant.dart';
+
 abstract class CSVService {
   static void saveMetadataToCSV(
       {required String filename,
@@ -16,7 +18,7 @@ abstract class CSVService {
     }
     await file.writeAsString(csvContent, mode: FileMode.append);
 
-    print('$filename saved to output.csv');
+    logger.i('$filename saved to output.csv');
   }
 
   static Future<bool> isImageInCsv(String imagePath, String csvPath) async {
@@ -43,7 +45,7 @@ abstract class CSVService {
     final existingFile = File('existing.csv');
 
     if (!await outputFile.exists()) {
-      print("Output file does not exist.");
+      logger.e("Output file does not exist.");
       return;
     }
 
@@ -64,7 +66,7 @@ abstract class CSVService {
 
       await outputFile.delete();
     } catch (e) {
-      print("Error appending or deleting files: $e");
+      logger.e("Error appending or deleting files: $e");
     }
   }
 
