@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:google_generative_ai/google_generative_ai.dart';
+import 'package:image_tagging_application/dotenv.dart';
 
 abstract class GenerativeAiService {
   static Future<Map<String, String>?> getTitle(String fileName, List<String> keywords) async {
@@ -12,7 +13,7 @@ abstract class GenerativeAiService {
     ];
     final model = GenerativeModel(
         model: 'gemini-1.5-flash-latest',
-        apiKey: "***REMOVED***",
+        apiKey: DotEnvironment.env['GEMINI_API_KEY']!,
         safetySettings: safetySettings);
 
     final prompt = """Paraphrase this file name and make it lengthy and give appropriate category.

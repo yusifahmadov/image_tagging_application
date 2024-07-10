@@ -3,16 +3,17 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:image_tagging_application/csv_service.dart';
+import 'package:image_tagging_application/dotenv.dart';
 import 'package:image_tagging_application/generative_ai_service.dart';
 
 class TaggingService {
   final apiUrl = 'https://api.everypixel.com/v1';
   final dio = Dio();
-  static final userID = "***REMOVED***";
-  static final secretKey = "***REMOVED***";
-  var auth = 'Basic ${base64Encode(utf8.encode('$userID:$secretKey'))}';
-  List<String> imagePaths = [];
+  late final String userID;
+  late final String secretKey;
 
+  List<String> imagePaths = [];
+  TaggingService({required this.userID, required this.secretKey});
   getKeywords(File file) async {
     List<String> keywords = [];
     FormData formData = FormData.fromMap({
@@ -21,7 +22,7 @@ class TaggingService {
     try {
       final response = await dio.post("$apiUrl/keywords",
           options: Options(
-            headers: <String, String>{'Authorization': auth},
+            headers: <String, String>{'Authorization': 'Basic ${base64Encode(utf8.encode('$userID:$secretKey'))}'},
           ),
           data: formData,
           queryParameters: {"num_keywords": 40});
@@ -30,11 +31,21 @@ class TaggingService {
       }
 
       String? paraphrasedTitle = (await GenerativeAiService.getTitle(
-              file.path.split('/').last.replaceAll(".png", ".jpeg").replaceAll("theyusifahmad_", ""), keywords))
+              file.path
+                  .split('/')
+                  .last
+                  .replaceAll(".png", ".jpeg")
+                  .replaceAll("${DotEnvironment.env["MIDJOURNEY_PREFIX"]}", ""),
+              keywords))
           ?.keys
           .first;
       String? category = (await GenerativeAiService.getTitle(
-              file.path.split('/').last.replaceAll(".png", ".jpeg").replaceAll("theyusifahmad_", ""), keywords))
+              file.path
+                  .split('/')
+                  .last
+                  .replaceAll(".png", ".jpeg")
+                  .replaceAll("${DotEnvironment.env["MIDJOURNEY_PREFIX"]}", ""),
+              keywords))
           ?.values
           .first;
 
@@ -54,7 +65,8 @@ class TaggingService {
     await _getImagesInDirectory(directory);
   }
 
-  Future<String?> _getTitle(File file) async {
+  @Deprecated("This function is deprecated. Use GenerativeAIService.getTitle for getting titles.")
+  Future<String?> getTitle(File file) async {
     FormData formData = FormData.fromMap({
       "file": await MultipartFile.fromFile(file.path),
     });
@@ -62,7 +74,7 @@ class TaggingService {
       final response = await dio.post(
         "$apiUrl/image_captioning",
         options: Options(
-          headers: <String, String>{'Authorization': auth},
+          headers: <String, String>{'Authorization': 'Basic ${base64Encode(utf8.encode('$userID:$secretKey'))}'},
         ),
         data: formData,
       );

@@ -62,10 +62,20 @@ abstract class CSVService {
       }
       await sink.close();
 
-      // Delete the output file
       await outputFile.delete();
     } catch (e) {
       print("Error appending or deleting files: $e");
     }
+  }
+
+  initialize() async {
+    final outputFile = File("output.csv");
+    final existingFile = File("output.csv");
+    if (!await outputFile.exists()) {
+      await outputFile.create();
+      await outputFile.writeAsString("Filename,Title,Keywords,Category\n");
+    }
+
+    if (!await existingFile.exists()) {}
   }
 }
