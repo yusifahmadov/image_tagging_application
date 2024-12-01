@@ -9,8 +9,9 @@ import 'package:image_tagging_application/tagging_service.dart';
 void main() async {
   await DotEnvironment.initialize();
   await TaggingException.check();
-  final TaggingService taggingService =
-      TaggingService(userID: DotEnvironment.env['USER_ID']!, secretKey: DotEnvironment.env["SECRET_KEY"]!);
+  final TaggingService taggingService = TaggingService(
+      userID: DotEnvironment.env['USER_ID']!,
+      secretKey: DotEnvironment.env["SECRET_KEY"]!);
   await taggingService.initialize();
   bool loopFinished = false;
   while (!loopFinished) {
@@ -20,8 +21,10 @@ void main() async {
           continue;
         }
         try {
-          await taggingService.getKeywords(taggingService.getFilesFromImagePaths(taggingService.imagePaths[i]));
+          await taggingService.getKeywords(
+              taggingService.getFilesFromImagePaths(taggingService.imagePaths[i]));
         } catch (e) {
+          print(e);
           print("Decoding from json is failed! Skipping this image!");
           continue;
         }

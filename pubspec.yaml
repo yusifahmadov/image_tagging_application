@@ -1,12 +1,11 @@
 name: image_tagging_application
-description: A sample command-line application.
+description: Image Tagging Application for Stockers
 version: 1.0.0
-# repository: https://github.com/my_org/my_repo
+repository: https://github.com/yusifahmadov/image_tagging_application
 
 environment:
   sdk: ^3.4.3
 
-# Add regular dependencies here.
 dependencies:
   http: 1.2.1
   image_picker: 1.1.2
